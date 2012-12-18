@@ -1,0 +1,14 @@
+body {
+	background-color: #DDDDDD;
+}
+h1.title {
+	text-align:center;
+}
+h5.userinfo {
+	float:right;
+	margin-top:0px;
+}
+h5.author {
+	text-align:center;
+}
+

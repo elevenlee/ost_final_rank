@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Rank Welcome Page</title>
+	<link type="text/css" rel="stylesheet" href="stylesheets/index.css">
+</head>
+
+<body>
+	{% if signflag %}
+		<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5>
+	{% else %}
+		<h5 class="userinfo"><a href="{{ url }}">Sign in</a> New to rank? <a href="{{ url }}">Sign up</a></h5>
+	{% endif %}
+	<br><br><br><h1 class="title"><b><strong>Welcome to the Rank!</strong></b></h1>
+	<h5 class="author"><b>Designed by Eleven Lee</b></h5><br><br><br>
+	<ul>
+		<li><a href="">Make a Vote</a></li>
+		<li><a href="">Add/Edit Category</a></li>
+		<li><a href="">Add/Edit Item</a></li>
+		<li><a href="">Search Category/Item</a></li>
+		<li><a href="">Make a Comment</a></li>
+		<li><a href="">Import/Export</a></li>
+	</ul>
+</body>
+</html>
