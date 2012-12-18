@@ -8,6 +8,10 @@ handlers:
 - url: /stylesheets
   static_dir: stylesheets
 
+- url: /category/.*
+  script: category.app
+  login: required
+
 - url: /.*
   script: rank.app
 

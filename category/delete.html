@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Delete Category</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/category/delete.css">
+</head>
+
+<body>
+	<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br>
+	{% if names %}
+		<h4 class="info"><b>You have deleted the following category:</b></h4>
+		<ul>
+		{% for name in names %}
+			<li>{{ name }}</li>
+		{% endfor %}
+		</ul><br>
+	{% endif %}
+	<h4 class="title"><b>Select categories:</b></h4>
+	<form method="post" action="/category/deleteaction"  target="_self">
+		{% for category in categories %}
+		<div><input type="checkbox" name="name" value="{{ category.name }}"> {{ category.name }}</div>
+		{% endfor %}
+		<br>
+		<div>
+			<input type="submit" name="delete" value="Delete Category">
+			<input type="submit" name="delete" value="Clear All">
+		</div>
+	</form><br><hr>
+	<ul>
+		<li>Back to <a href="/">Home Page</a></li>
+	</ul>
+</body>
+</html>
