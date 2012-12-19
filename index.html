@@ -6,7 +6,7 @@
 </head>
 
 <body>
-	{% if signflag %}
+	{% if user %}
 		<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5>
 	{% else %}
 		<h5 class="userinfo"><a href="{{ url }}">Sign in</a> New to rank? <a href="{{ url }}">Sign up</a></h5>
@@ -15,7 +15,7 @@
 	<h5 class="author"><b>Designed by Eleven Lee</b></h5><br><br><br>
 	<b>- Rank</b>
 	<ul>
-		<li><a href="">Make a Vote</a></li>
+		<li><a href="/vote/selectcategory">Make a Vote</a></li>
 	</ul>
 	<b>- Category</b>
 	<ul>

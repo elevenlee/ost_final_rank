@@ -8,6 +8,9 @@ handlers:
 - url: /stylesheets
   static_dir: stylesheets
 
+- url: /vote/.*
+  script: vote.app
+
 - url: /category/.*
   script: category.app
   login: required

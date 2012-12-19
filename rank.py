@@ -9,15 +9,9 @@ jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.di
 class MainPage(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
-        if user:
-            url = users.create_logout_url(self.request.uri)
-            signflag = True
-        else:
-            url = users.create_login_url(self.request.uri)
-            signflag = False
+        url = users.create_logout_url(self.request.uri) if user else users.create_login_url(self.request.uri)
 
         template_values = {
-            'signflag': signflag,
             'url': url,
             'user': user,
         }

@@ -28,10 +28,10 @@ def get_item(author, category_name, item_name):
                                 parent=get_ancestor_key(author, category_name))
     return db.get(item_key)
 
-def get_items(author, category_name, order='-create_time'):
+def get_items(author, category_name, order='-create_time', count_or_not=False):
     ancestor_key = get_ancestor_key(author, category_name)
     item_query = rankdata.Item.all().ancestor(ancestor_key).order(order)
-    return item_query.run()
+    return item_query.count() if count_or_not else item_query.run()
 
 def delete_items(author, category_name, item_names=[]):
     for item_name in item_names:

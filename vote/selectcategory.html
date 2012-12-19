@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Select Category to Vote</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/vote/selectcategory.css">
+</head>
+
+<body>
+	{% if user %}
+		<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br>
+	{% else %}
+		<h5 class="userinfo"><a href="{{ url }}">Sign in</a> New to rank?<a href="{{ url }}">Sign up</a></h5><br>
+	{% endif %}
+
+	<h4 class="title"><b>Select a category: (Only Category(s) that have more than two items shown)</b></h4>
+		<form method="get" action="" target="_self">
+			{% for category in categories %}
+				<div>
+					<input type="radio" name="category_name" value="{{ category.author }}/{{ category.name }}" checked> {{ category.name }} -- by {{ category.author.nickname() }}
+				</div><br>
+			{% endfor %}
+			<div>
+				<input type="submit" name="select" value="Select a Category">
+			</div>
+		</form><br><hr>
+
+	<ul>
+		<li>Back to <a href="/">Home Page</a></li>
+	</ul>
+</body>
+</html>
+

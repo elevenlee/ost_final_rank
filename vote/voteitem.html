@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Vote for {{ category.name }}</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/vote/voteitem.css">
+</head>
+
+<body>
+	{% if user %}
+		<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br>
+	{% else %}
+		<h5 class="userinfo"><a href="{{ url }}">Sign in</a> New to rank?<a href="{{ url }}">Sign up</a></h5><br>
+	{% endif %}
+	{% if win %}
+		<h4 class="info"><i>You voted for "{{ win.name }}" over "{{ lose.name }}"</i></h4>
+		<h4><b>Current totals:</b></h4>
+		<table class="result" border="1">
+			<tr>
+				<th>Item</th>
+				<th>Winning</th>
+			</tr>
+			<tr>
+				<td>{{ win.name }}</td>
+				<td>{{ win.number_of_win }}</td>
+			</tr>
+			<tr>
+				<td>{{ lose.name }}</td>
+				<td>{{ lose.number_of_win }}</td>
+			</tr>
+		</table><br><hr>
+	{% endif %}
+
+	<p><b><strong>Category:</strong></b> {{ category.name }}</p>
+	<form method="post" action="" target="_self">
+		<div><input type="hidden" name="category_key" value="{{ category.author }}/{{ category.name }}"></div>
+		{% for item in items %}
+			<div>
+				<input type="radio" name="item_name" value="{{ item.name  }}" checked> {{ item.name }}
+			</div><br>
+		{% endfor %}
+		<div>
+			<input type="submit" name="method" value="Vote">
+			<input type="submit" name="method" value="Skip">
+		</div>
+	</form><br><hr>
+
+	<ul>
+		<li>
+			<form method="post" action="" target="_self">
+				<div><input type="hidden" name="category_key" value="{{ category.author }}/{{ category.name }}"></div>
+				<div>See <input type="submit" name="result" value="all results"></div>
+			</form>
+		</li>
+		<li>Select other <a href="/vote/selectcategory">categories</a></li>
+		<li>Back to <a href="/">Home Page</a></li>
+	</ul>
+</body>
+</html>
