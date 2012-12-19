@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Add Item in Category {{ category_name }}</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/item/add.css">
+</head>
+
+<body>
+	<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br><br>
+	<h4 class="info"><b>Items you already have in Category '{{ category_name }}':</b></h4>
+	<ul>
+		{% for item in items %}
+			<li>{{ item.name }}</li>
+		{% endfor %}
+	</ul><br>
+	<h4 class="title"><b>Input item name:</b></h4>
+	<form method="post" action="/item/addaction" target="_self">
+		<div><input type="hidden" name="category_name" value="{{ category_name }}"></div>
+		<div><input type="text" name="item_name"></div>
+		{% if invalid_name %}
+		<div class="invalid"><i>'{{ invalid_name }}' is invalid!</i></div>
+		{% endif %}
+		<br>
+		<div><input type="submit" name="add" value="Add Item"></div>
+	</form><br><hr>
+	<ul>
+		<li>See <a href="/item/index">all categories</a></li>
+		<li>Back to <a href="/">Home Page</a></li>
+	</ul>
+</body>
+</html>

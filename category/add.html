@@ -6,8 +6,7 @@
 </head>
 
 <body>
-	<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5>
-	<br><br>
+	<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br><br>
 	{% if categories %}
 	<h4 class="info"><b>Categories you already have:</b></h4>
 	<ul>
@@ -17,17 +16,14 @@
 	</ul><br>
 	{% endif %}
 	<h4 class="title"><b>Input category name:</b></h4>
-	<br>
 	<form method="post" action="/category/addaction" target="_self">
-		<div><input type="text" name="name"></div>
-        {% if name %}
-		<div class="invalid"><i>'{{ name }}' is invalid!</i></div>
+		<div><input type="text" name="category_name"></div>
+        {% if invalid_name %}
+		<div class="invalid"><i>'{{ invalid_name }}' is invalid!</i></div>
 		{% endif %}
 		<br>
 		<div><input type="submit" name="add" value="Add Category"></div>
-	</form>
-	<br>
-	<hr>
+	</form><br><hr>
 	<ul>
 		<li>Back to <a href="/">Home Page</a></li>
 	</ul>

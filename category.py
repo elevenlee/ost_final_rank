@@ -3,6 +3,7 @@ import os
 import urllib
 import webapp2
 import rankdata
+import item
 import util
 
 from google.appengine.ext import db
@@ -16,26 +17,28 @@ delete_page_path = 'category/delete'
 delete_action_path = 'category/deleteaction'
 
 def get_category(author, name):
-    category_key = db.Key.from_path('Category', '{author}/{name}'.format(author=author, name=name))
+    category_key = db.Key.from_path('Category', '{author}/{category}'.format(author=author, category=name))
     return db.get(category_key)
 
-def get_categories(author):
-    category_query = rankdata.Category.all().filter("author = ", author)
+def get_categories(author, order='-create_time'):
+    category_query = rankdata.Category.all().filter("author = ", author).order(order)
     return category_query.run()
 
 def delete_categories(author, names=[]):
     for name in names:
-        key = db.Key.from_path('Category', '{author}/{name}'.format(author=author, name=name))
+        key = db.Key.from_path('Category', '{author}/{category}'.format(author=author, category=name))
+        item.delete_all_items(author, db.get(key).name)
         db.delete(key)
 
 def delete_all_categories(author):
     category_query = rankdata.Category.all().filter("author = ", author)
     for category in category_query.run():
+        item.delete_all_items(author, category.name)
         db.delete(category)
 
 class AddCategoryPage(webapp2.RequestHandler):
     def get(self):
-        name = self.request.get('name')
+        invalid_name = self.request.get('invalid_name')
         user = users.get_current_user()
         categories = get_categories(author=user)
         url = users.create_logout_url(self.request.uri)
@@ -44,21 +47,24 @@ class AddCategoryPage(webapp2.RequestHandler):
             'categories': categories,
             'url': url,
             'user': user,
-            'name': name,
+            'invalid_name': invalid_name,
         }
         template = jinja_environment.get_template('{path}.html'.format(path=add_page_path))
         self.response.out.write(template.render(template_values))
 
 class AddCategoryAction(webapp2.RequestHandler):
     def post(self):
-        name = self.request.get('name')
-        if '/' in name:
-            self.redirect('/{path}?'.format(path=add_page_path) + urllib.urlencode({'name': name}))
+        name = self.request.get('category_name').strip()
+        if name == '':
+            self.redirect('/{path}?'.format(path=add_page_path) + urllib.urlencode({'invalid_name': 'empty name'}))
+            return
+        elif '/' in name:
+            self.redirect('/{path}?'.format(path=add_page_path) + urllib.urlencode({'invalid_name': name}))
             return
 
         user = users.get_current_user()
-        if get_category(user, name):
-            self.redirect('/{path}?'.format(path=add_page_path) + urllib.urlencode({'name': name}))
+        if get_category(author=user, name=name):
+            self.redirect('/{path}?'.format(path=add_page_path) + urllib.urlencode({'invalid_name': name}))
         else:
             category = rankdata.Category(key_name='{author}/{name}'.format(author=user, name=name), author=user, name=name)
             category.put()
@@ -80,8 +86,8 @@ class EditCategoryPage(webapp2.RequestHandler):
 
 class DeleteCategoryPage(webapp2.RequestHandler):
     def get(self):
-        name = self.request.get('name')
-        names = util.parse_string(name) if name else None
+        delete_name = self.request.get('delete_name')
+        delete_names = util.parse_string(delete_name) if delete_name else None
         user = users.get_current_user()
         categories = get_categories(author=user)
         url = users.create_logout_url(self.request.uri)
@@ -90,23 +96,24 @@ class DeleteCategoryPage(webapp2.RequestHandler):
             'categories': categories,
             'url': url,
             'user': user,
-            'names': names,
+            'delete_names': delete_names,
         }
         template = jinja_environment.get_template('{path}.html'.format(path=delete_page_path))
         self.response.out.write(template.render(template_value))
 
 class DeleteCategoryAction(webapp2.RequestHandler):
     def post(self):
-        names = self.request.get_all('name')
         command = self.request.get('delete')
         user = users.get_current_user()
         url = users.create_logout_url(self.request.uri)
 
         if 'Delete' in command:
-            delete_categories(user, names)
+            category_names = self.request.get_all('category_name')
+            delete_categories(user, category_names)
         elif 'Clear' in command:
+            category_names = [entity.name for entity in get_categories(author=user)]
             delete_all_categories(user)
-        self.redirect('/{path}?'.format(path=delete_page_path) + urllib.urlencode({'name': [name for name in names]}))
+        self.redirect('/{path}?'.format(path=delete_page_path) + urllib.urlencode({'delete_name': [name for name in category_names]}))
 
 app = webapp2.WSGIApplication([('/{path}'.format(path=add_page_path), AddCategoryPage),
                                ('/{path}'.format(path=add_action_path), AddCategoryAction),

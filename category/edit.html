@@ -10,9 +10,8 @@
 	<h4 class="title"><b>Select a category:</b></h4>
 	<form method="post" action=""  target="_self">
 		{% for category in categories %}
-		<div><input type="radio" name="name" value="{{ category.name }}" checked> {{ category.name }}</div>
+		<div><input type="radio" name="name" value="{{ category.name }}" checked> {{ category.name }}</div><br>
 		{% endfor %}
-		<br>
 		<div><input type="submit" name="edit" value="Edit Category"></div>
 	</form><br><hr>
 	<ul>

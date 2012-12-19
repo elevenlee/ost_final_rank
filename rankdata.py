@@ -21,3 +21,4 @@ class Comment(db.Model):
     author = db.UserProperty(required=True, auto_current_user_add=True)
     content = db.StringProperty(required=True, multiline=True)
     make_time = db.DateTimeProperty(auto_now_add=True)
+
