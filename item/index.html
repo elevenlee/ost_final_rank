@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>Select Category</title>
-	<link type="text/css" rel="stylesheet" href="../stylesheets/category/select.css">
+	<link type="text/css" rel="stylesheet" href="../stylesheets/item/index.css">
 </head>
 
 <body>
@@ -10,10 +10,16 @@
 	<h4 class="title"><b>Select a category:</b></h4>
 	<form method="post" action="" target="_self">
 		{% for category in categories %}
-		<div><input type="radio" name="name" value="{{ category.name }}" checked> {{ category.name }}</div>
+		<div>
+			<input type="radio" name="name" value="{{ category.name }}" checked> {{ category.name }}
+		</div>
 		{% endfor %}
 		<br>
-		<div><input type="submit" name="select" value="Select"></div>
+		<div>
+			<input type="submit" name="add" value="Add Item">
+			<input type="submit" name="edit" value="Edit Item">
+			<input type="submit" name="delete" value="Delete Item">
+		</div>
 	</form><br><hr>
 	<ul>
 		<li>Back to <a href="/">Home Page</a></li>

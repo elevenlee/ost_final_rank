@@ -14,7 +14,6 @@ add_action_path = 'category/addaction'
 edit_page_path = 'category/edit'
 delete_page_path = 'category/delete'
 delete_action_path = 'category/deleteaction'
-select_page_path = 'category/select'
 
 def get_category(author, name):
     category_key = db.Key.from_path('Category', '{author}/{name}'.format(author=author, name=name))
@@ -109,24 +108,9 @@ class DeleteCategoryAction(webapp2.RequestHandler):
             delete_all_categories(user)
         self.redirect('/{path}?'.format(path=delete_page_path) + urllib.urlencode({'name': [name for name in names]}))
 
-class SelectCategoryPage(webapp2.RequestHandler):
-    def get(self):
-        user = users.get_current_user()
-        categories = get_categories(author=user)
-        url = users.create_logout_url(self.request.uri)
-
-        template_value = {
-            'categories': categories,
-            'url': url,
-            'user': user,
-        }
-        template = jinja_environment.get_template('{path}.html'.format(path=select_page_path))
-        self.response.out.write(template.render(template_value))
-
 app = webapp2.WSGIApplication([('/{path}'.format(path=add_page_path), AddCategoryPage),
                                ('/{path}'.format(path=add_action_path), AddCategoryAction),
                                ('/{path}'.format(path=edit_page_path), EditCategoryPage),
                                ('/{path}'.format(path=delete_page_path), DeleteCategoryPage),
-                               ('/{path}'.format(path=delete_action_path), DeleteCategoryAction),
-                               ('/{path}'.format(path=select_page_path), SelectCategoryPage)],
+                               ('/{path}'.format(path=delete_action_path), DeleteCategoryAction)],
                               debug=True)

@@ -12,6 +12,10 @@ handlers:
   script: category.app
   login: required
 
+- url: /item/.*
+  script: item.app
+  login: required
+
 - url: /.*
   script: rank.app
 
