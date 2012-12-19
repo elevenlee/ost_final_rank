@@ -13,8 +13,12 @@ jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.di
 add_page_path = 'category/add'
 add_action_path = 'category/addaction'
 edit_page_path = 'category/edit'
+edit_action_path = 'category/editaction'
+edit_category_path = 'category/editcategory'
+edit_category_action_path = 'category/editcategoryaction'
 delete_page_path = 'category/delete'
 delete_action_path = 'category/deleteaction'
+item_page_path = 'item/addeditdelete'
 
 def get_category(author, name):
     category_key = db.Key.from_path('Category', '{author}/{category}'.format(author=author, category=name))
@@ -23,6 +27,22 @@ def get_category(author, name):
 def get_categories(author, order='-create_time'):
     category_query = rankdata.Category.all().filter("author = ", author).order(order)
     return category_query.run()
+
+def update_category(author, new_name, old_name):
+    old_category = get_category(author=author, name=old_name)
+    old_items = item.get_items(author=author, category_name=old_name)
+    db.delete(old_category)
+
+    new_category = rankdata.Category(key_name='{author}/{name}'.format(author=author, name=new_name), author=author, name=new_name)
+    new_category.put()
+
+    for old_item in old_items:
+        new_item = rankdata.Item(key_name='{author}/{category}{item}'.format(author=author, category=new_name, item=old_item.name),
+                                 parent=item.get_ancestor_key(author=author, category_name=new_name),
+                                 name=old_item.name, create_time=old_item.create_time,
+                                 number_of_win=old_item.number_of_win, number_of_lose=old_item.number_of_lose, percentage=old_item.percentage)
+        db.delete(old_item)
+        new_item.put()
 
 def delete_categories(author, names=[]):
     for name in names:
@@ -56,19 +76,23 @@ class AddCategoryAction(webapp2.RequestHandler):
     def post(self):
         name = self.request.get('category_name').strip()
         if name == '':
-            self.redirect('/{path}?'.format(path=add_page_path) + urllib.urlencode({'invalid_name': 'empty name'}))
+            self.redirect('/{path}?'.format(path=add_page_path) +
+                          urllib.urlencode({'invalid_name': 'empty name'}))
             return
         elif '/' in name:
-            self.redirect('/{path}?'.format(path=add_page_path) + urllib.urlencode({'invalid_name': name}))
+            self.redirect('/{path}?'.format(path=add_page_path) +
+                          urllib.urlencode({'invalid_name': name}))
             return
 
         user = users.get_current_user()
         if get_category(author=user, name=name):
-            self.redirect('/{path}?'.format(path=add_page_path) + urllib.urlencode({'invalid_name': name}))
+            self.redirect('/{path}?'.format(path=add_page_path) +
+                          urllib.urlencode({'invalid_name': name}))
         else:
             category = rankdata.Category(key_name='{author}/{name}'.format(author=user, name=name), author=user, name=name)
             category.put()
-            self.redirect('/')
+            self.redirect('/{path}?'.format(path=item_page_path) +
+                          urllib.urlencode({'category_name': name, 'method': 'Add'}))
 
 class EditCategoryPage(webapp2.RequestHandler):
     def get(self):
@@ -83,6 +107,51 @@ class EditCategoryPage(webapp2.RequestHandler):
         }
         template = jinja_environment.get_template('{path}.html'.format(path=edit_page_path))
         self.response.out.write(template.render(template_values))
+
+class EditCategoryAction(webapp2.RequestHandler):
+    def get(self):
+        category_name = self.request.get('category_name')
+        invalid_name = self.request.get('invalid_name')
+        user = users.get_current_user()
+        url = users.create_logout_url(self.request.uri)
+        items = item.get_items(author=user, category_name=category_name)
+
+        template_values = {
+            'category_name': category_name,
+            'items': items,
+            'url': url,
+            'user': user,
+            'invalid_name': invalid_name,
+        }
+        template = jinja_environment.get_template('{path}.html'.format(path=edit_category_path))
+        self.response.out.write(template.render(template_values))
+
+class EditCategoryNameAction(webapp2.RequestHandler):
+    def post(self):
+        old_category_name = self.request.get('category_name').strip()
+        new_category_name = self.request.get('new_category_name').strip()
+        if not cmp(old_category_name, new_category_name):
+            self.redirect('/{path}?'.format(path=edit_action_path) +
+                          urllib.urlencode({'category_name': old_category_name}))
+            return
+
+        if new_category_name == '':
+            self.redirect('/{path}?'.format(path=edit_action_path) +
+                          urllib.urlencode({'invalid_name': 'empty name', 'category_name': old_category_name}))
+            return
+        elif '/' in new_category_name:
+            self.redirect('/{path}?'.format(path=edit_action_path) +
+                          urllib.urlencode({'invalid_name': new_category_name, 'category_name': old_category_name}))
+            return
+
+        user = users.get_current_user()
+        if get_category(author=user, name=new_category_name):
+            self.redirect('/{path}?'.format(path=edit_action_path) +
+                          urllib.urlencode({'invalid_name': new_category_name, 'category_name': old_category_name}))
+        else:
+            update_category(author=user, new_name=new_category_name, old_name=old_category_name)
+            self.redirect('/{path}?'.format(path=edit_action_path) +
+                          urllib.urlencode({'category_name': new_category_name}))
 
 class DeleteCategoryPage(webapp2.RequestHandler):
     def get(self):
@@ -118,6 +187,8 @@ class DeleteCategoryAction(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([('/{path}'.format(path=add_page_path), AddCategoryPage),
                                ('/{path}'.format(path=add_action_path), AddCategoryAction),
                                ('/{path}'.format(path=edit_page_path), EditCategoryPage),
+                               ('/{path}'.format(path=edit_action_path), EditCategoryAction),
+                               ('/{path}'.format(path=edit_category_action_path), EditCategoryNameAction),
                                ('/{path}'.format(path=delete_page_path), DeleteCategoryPage),
                                ('/{path}'.format(path=delete_action_path), DeleteCategoryAction)],
                               debug=True)

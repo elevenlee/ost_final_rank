@@ -11,3 +11,6 @@ h5.userinfo {
 	float:right;
 	margin-top:0px;
 }
+div.invalid {
+	color: #FF0000;
+}

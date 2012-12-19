@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Edit Category - {{ category_name }}</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/category/editcategory.css">
+</head>
+
+<body>
+	<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br>
+    <h4 class="warning"><i>Note: Once you change the category's name, all items belonging to would be reserved! So DON'T WORRY</i></h4>
+	<h4 class="title"><b>Edit category name:</b></h4>
+	<form method="post" action="/category/editcategoryaction" target="_self">
+		<div><input type="hidden" name="category_name" value="{{ category_name }}"></div>
+		<div><input type="text" name="new_category_name" value="{{ category_name }}"></div>
+		{% if invalid_name %}
+			<div class="invalid"><i>'{{ invalid_name }}' is invalid!</i></div>
+		{% endif %}
+		<br>
+		<div><input type="submit" name="save" value="Save Category Name"></div>
+	</form><br><hr>
+	<h4 class="info"><b>Items in Category '{{ category_name }}'</b></h4>
+	<ul>
+		{% for item in items %}
+			<li>{{ item.name }}</li>
+		{% endfor %}
+	</ul><br>
+	<form method="get" action="/item/addeditdelete" target="_self">
+		<div><input type="hidden" name="category_name" value="{{ category_name }}"></div>
+		<div>
+			<input type="submit" name="method" value="Add Item">
+			<input type="submit" name="method" value="Edit Item">
+			<input type="submit" name="method" value="Delete Item">
+		</div>
+    </form><br><hr>
+	<ul>
+		<li>See <a href="/category/edit"> all categries</a></li>
+		<li>Back to <a href="/">Home Page</a></li>
+	</ul>
+</body>
+</html>
