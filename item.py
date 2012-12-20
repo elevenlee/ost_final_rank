@@ -113,7 +113,7 @@ class AddItemAction(webapp2.RequestHandler):
         else:
             item = rankdata.Item(key_name='{author}/{category}/{item}'.format(author=user, category=category_name, item=item_name),
                                  parent=get_ancestor_key(author=user, category_name=category_name),
-                                 name=item_name, number_of_win=0, number_of_lose=0, percentage=-1.0)
+                                 name=item_name, number_of_win=0, number_of_lose=0)
             item.put()
             self.redirect('/{path}?'.format(path=add_edit_delete_page_path) +
                           urllib.urlencode({'category_name': category_name, 'method': 'Add'}))
