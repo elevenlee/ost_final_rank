@@ -1,0 +1,16 @@
+body {
+	background-color: #DDDDDD;
+}
+h4.info {
+	color: #0000FF;
+}
+table.result tr {
+	text-align:center;
+}
+table.result td {
+	valign:middle;
+}
+h5.userinfo {
+	float:right;
+	margin-top:0px;
+}

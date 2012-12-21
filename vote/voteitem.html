@@ -31,11 +31,12 @@
 	{% endif %}
 
 	<p><b><strong>Category:</strong></b> {{ category.name }}</p>
-	<form method="post" action="" target="_self">
+	<form method="post" action="/vote/voteitemaction" target="_self">
 		<div><input type="hidden" name="category_key" value="{{ category.author }}/{{ category.name }}"></div>
 		{% for item in items %}
 			<div>
-				<input type="radio" name="item_name" value="{{ item.name  }}" checked> {{ item.name }}
+				<input type="hidden" name="item_name" value="{{ item.name }}">
+				<input type="radio" name="win_item_name" value="{{ item.name  }}" checked> {{ item.name }}
 			</div><br>
 		{% endfor %}
 		<div>
@@ -45,12 +46,7 @@
 	</form><br><hr>
 
 	<ul>
-		<li>
-			<form method="post" action="" target="_self">
-				<div><input type="hidden" name="category_key" value="{{ category.author }}/{{ category.name }}"></div>
-				<div>See <input type="submit" name="result" value="all results"></div>
-			</form>
-		</li>
+		<li>See <a href="/vote/resultaction?category_key={{ category.author }}/{{category.name }}">all results</a> in Category '{{ category.name }}'</li>
 		<li>Select other <a href="/vote/selectcategory">categories</a></li>
 		<li>Back to <a href="/">Home Page</a></li>
 	</ul>

@@ -21,3 +21,9 @@ indexes:
   properties:
   - name: create_time
     direction: desc
+
+- kind: Item
+  ancestor: yes
+  properties:
+  - name: percentage
+    direction: desc

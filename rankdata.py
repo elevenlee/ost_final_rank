@@ -15,6 +15,7 @@ class Item(db.Model):
     last_modified_time = db.DateTimeProperty(auto_now=True)
     number_of_win = db.IntegerProperty(required=True)
     number_of_lose = db.IntegerProperty(required=True)
+    percentage = db.FloatProperty(required=True)
 
 class Comment(db.Model):
     author = db.UserProperty(required=True, auto_current_user_add=True)

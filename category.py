@@ -44,7 +44,8 @@ def update_category(author, new_name, old_name):
         new_item = rankdata.Item(key_name='{author}/{category}/{item}'.format(author=author, category=new_name, item=old_item.name),
                                  parent=item.get_ancestor_key(author=author, category_name=new_name),
                                  name=old_item.name, create_time=old_item.create_time,
-                                 number_of_win=old_item.number_of_win, number_of_lose=old_item.number_of_lose)
+                                 number_of_win=old_item.number_of_win, number_of_lose=old_item.number_of_lose,
+                                 percentage = old_item.percentage)
         db.delete(old_item)
         new_item.put()
 
