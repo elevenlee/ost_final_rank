@@ -24,6 +24,10 @@ def get_category(author, name):
     category_key = db.Key.from_path('Category', '{author}/{category}'.format(author=author, category=name))
     return db.get(category_key)
 
+def get_category_by_key(key):
+    category_key = db.Key.from_path('Category', key)
+    return db.get(category_key)
+
 def get_categories(author=None, order='-create_time', item_number=0):
     category_query = rankdata.Category.all().filter("author = ", author).order(order) if author else rankdata.Category.all().order(order)
     return [ category for category in category_query.run() if item.get_items(author=category.author, category_name=category.name, count_or_not=True) >= item_number ] if item_number else category_query.run()
@@ -37,7 +41,7 @@ def update_category(author, new_name, old_name):
     new_category.put()
 
     for old_item in old_items:
-        new_item = rankdata.Item(key_name='{author}/{category}{item}'.format(author=author, category=new_name, item=old_item.name),
+        new_item = rankdata.Item(key_name='{author}/{category}/{item}'.format(author=author, category=new_name, item=old_item.name),
                                  parent=item.get_ancestor_key(author=author, category_name=new_name),
                                  name=old_item.name, create_time=old_item.create_time,
                                  number_of_win=old_item.number_of_win, number_of_lose=old_item.number_of_lose)

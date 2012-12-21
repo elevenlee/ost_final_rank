@@ -1,5 +1,6 @@
 import jinja2
 import os
+import random
 import urllib
 import webapp2
 import rankdata
@@ -28,10 +29,23 @@ def get_item(author, category_name, item_name):
                                 parent=get_ancestor_key(author, category_name))
     return db.get(item_key)
 
+def get_item_by_key(category_key, item_name):
+    ancestor_key = db.Key.from_path('Category', category_key)
+    item_key = db.Key.from_path('Item',
+                                '{category_key}/{item}'.format(category_key=category_key, item=item_name),
+                                parent=ancestor_key)
+    return db.get(item_key)
+
 def get_items(author, category_name, order='-create_time', count_or_not=False):
     ancestor_key = get_ancestor_key(author, category_name)
     item_query = rankdata.Item.all().ancestor(ancestor_key).order(order)
     return item_query.count() if count_or_not else item_query.run()
+
+def get_random_items(category_key, number=2):
+    ancestor_key = db.Key.from_path('Category', category_key)
+    item_query = rankdata.Item.all().ancestor(ancestor_key)
+    item_list = item_query.fetch(limit=None)
+    return [item_list[i] for i in random.sample(range(item_query.count()), number)]
 
 def delete_items(author, category_name, item_names=[]):
     for item_name in item_names:

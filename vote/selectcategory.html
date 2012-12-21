@@ -13,10 +13,10 @@
 	{% endif %}
 
 	<h4 class="title"><b>Select a category: (Only Category(s) that have more than two items shown)</b></h4>
-		<form method="get" action="" target="_self">
+		<form method="get" action="/vote/selectcategoryaction" target="_self">
 			{% for category in categories %}
 				<div>
-					<input type="radio" name="category_name" value="{{ category.author }}/{{ category.name }}" checked> {{ category.name }} -- by {{ category.author.nickname() }}
+					<input type="radio" name="category_key" value="{{ category.author }}/{{ category.name }}" checked> {{ category.name }} -- post by {{ category.author.nickname() }}
 				</div><br>
 			{% endfor %}
 			<div>
