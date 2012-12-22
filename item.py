@@ -25,13 +25,13 @@ delete_page_path = 'item/delete'
 delete_action_path = 'item/deleteaction'
 
 def get_ancestor_key(author, category_name):
-    """Returns ancestory key of the specified item
+    """Returns ancestor key of the specified item
 
     Each item must have a category ancestor. The format of ancestor key
     is 'author/category name'.
     :param author the specified author
     :param category_name the specified category name
-    :returns: ancestory key of specified item
+    :returns: ancestor key of specified item
     """
     return db.Key.from_path('Category', '{author}/{category}'.format(author=author, category=category_name))
 
