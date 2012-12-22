@@ -25,15 +25,38 @@ delete_page_path = 'item/delete'
 delete_action_path = 'item/deleteaction'
 
 def get_ancestor_key(author, category_name):
+    """Returns ancestory key of the specified item
+
+    Each item must have a category ancestor. The format of ancestor key
+    is 'author/category name'.
+    :param author the specified author
+    :param category_name the specified category name
+    :returns: ancestory key of specified item
+    """
     return db.Key.from_path('Category', '{author}/{category}'.format(author=author, category=category_name))
 
 def get_item(author, category_name, item_name):
+    """Returns item of specified author, category, and item name
+
+    :param author the specified author
+    :param category_name the specified category name
+    :param item_name the specified item name
+    :returns item of speicfied author, category, and item name
+    """
     item_key = db.Key.from_path('Item',
                                 '{author}/{category}/{item}'.format(author=author, category=category_name, item=item_name),
                                 parent=get_ancestor_key(author, category_name))
     return db.get(item_key)
 
 def get_item_by_key(category_key, item_name):
+    """Returns item of specified category key and item name
+
+    Each item must have a category ancestor. The category_key is actually
+    the ancestor key of item which format is 'author/category name'.
+    :param category_key the specified ancestor key of item
+    :param item_name the specified item name
+    :returns: item of specified category key and item name
+    """
     ancestor_key = db.Key.from_path('Category', category_key)
     item_key = db.Key.from_path('Item',
                                 '{category_key}/{item}'.format(category_key=category_key, item=item_name),
@@ -41,6 +64,14 @@ def get_item_by_key(category_key, item_name):
     return db.get(item_key)
 
 def get_items_by_name(keyword):
+    """Returns items of specified keyword
+
+    Retrive all items that its name equals keyword. The returned items is
+    dictionary type, the key value is the item's ancestor key and the value
+    is the item name
+    :param keyword the specified keyword
+    :returns: items of specified keyword
+    """
     item_map = {}
     category_query = rankdata.Category.all()
     for category_data in category_query.run():
@@ -51,17 +82,48 @@ def get_items_by_name(keyword):
     return item_map
 
 def get_items(author, category_name, order='-create_time', count_or_not=False):
+    """Returns items of specified author, category, and order. If
+       count_or_not set to True, returns the number of items.
+
+    :paramm author the specified author
+    :param category_name the specified category name
+    :param order the specified order. The default value is ordering by
+                 create time field in descending
+    :param count_or_not determine return number or actual items. The
+                        default value is False which return the actual
+                        items
+    :returns items of specified author, category, and order. If
+             count_or_not set to True, returns the number of items
+    """
     ancestor_key = get_ancestor_key(author, category_name)
     item_query = rankdata.Item.all().ancestor(ancestor_key).order(order)
     return item_query.count() if count_or_not else item_query.run()
 
 def get_random_items(category_key, number=2):
+    """Returns random items of specified category key
+
+    Each item must have a category ancestor. The category_key is actually
+    the ancestor key of item which format is 'author/category name'.
+    :param category_key the specified ancestor key
+    :param number the number of random items. The default valu is 2
+    :returns random items of specified category key
+    """
     ancestor_key = db.Key.from_path('Category', category_key)
     item_query = rankdata.Item.all().ancestor(ancestor_key)
     item_list = item_query.fetch(limit=None)
     return [item_list[i] for i in random.sample(range(item_query.count()), number)]
 
 def update_item(author, category_name, new_item_name, old_item_name):
+    """Update item of specified author, category name, new item name, and
+       old item name
+
+    When update the item name, all comments belonging to the old item as
+    well as the vote result would be delete automatically.
+    :param author the specified author
+    :param category_name the specified category name
+    :param new_item_name the specified new item name
+    :param old_item_name the specified old item name
+    """
     old_item = get_item(author=author, category_name=category_name, item_name=old_item_name)
     comment.delete_all_comments(category_key='{author}/{category}'.format(author=author, category=category_name), item_name=old_item_name)
     db.delete(old_item)
@@ -73,6 +135,15 @@ def update_item(author, category_name, new_item_name, old_item_name):
     new_item.put()
 
 def reserve_all_items(author, new_category_name, old_category_name):
+    """Reserve all items as well as comments belonging to when its
+       ancestor category name changed
+
+    When update the category name, all items belonging to as well as its
+    all comments would be reserved automatically
+    :param author the specified author
+    :param new_category_name the specified new category name
+    :param old_category_name the specified old category name
+    """
     old_items = get_items(author=author, category_name=old_category_name)
 
     for old_item in old_items:
@@ -98,6 +169,14 @@ def reserve_all_items(author, new_category_name, old_category_name):
         db.delete(old_item)
 
 def delete_items(author, category_name, item_names=[]):
+    """Delete items of specified author, category and item name
+
+    When delete an item, all comments belonging to as well as vote result
+    would be delete automatically
+    :param author the specified author
+    :param category_name the specified category name
+    "param item_names the specified item name list
+    """
     for item_name in item_names:
         key = db.Key.from_path('Item',
                                '{author}/{category}/{item}'.format(author=author, category=category_name, item=item_name),
@@ -106,6 +185,13 @@ def delete_items(author, category_name, item_names=[]):
         db.delete(key)
 
 def delete_all_items(author, category_name):
+    """Delete all items of specified author and category
+
+    When delete an item, all comments belonging to as well as vote result
+    would be delete automatically
+    :param author the specified author
+    :param category_name the specified category name
+    """
     ancestor_key = get_ancestor_key(author, category_name)
     item_query = rankdata.Item.all().ancestor(ancestor_key)
     for item in item_query.run():
@@ -113,7 +199,15 @@ def delete_all_items(author, category_name):
         db.delete(item)
 
 class ItemMainPage(webapp2.RequestHandler):
+    """Construct edit item main HTML page
+
+    """
     def get(self):
+        """Handle user request
+
+        The edit item main HTML page would list all categories that the
+        user have. The user should select one of them to edit items
+        """
         invalid_select = self.request.get('select_category')
         user = users.get_current_user()
         categories = category.get_categories(author=user)
@@ -129,7 +223,15 @@ class ItemMainPage(webapp2.RequestHandler):
         self.response.out.write(template.render(template_value))
 
 class AddEditDeletePage(webapp2.RequestHandler):
+    """Construct add, edit, delete item HTML page
+
+    """
     def get(self):
+        """Handle user request
+
+        According to the edit item main page form submition, construct
+        add, edit, delete item HTML page
+        """
         category_name = self.request.get('category_name')
         if not category_name:
             self.redirect('/{path}?'.format(path=main_page_path) + 
@@ -175,7 +277,15 @@ class AddEditDeletePage(webapp2.RequestHandler):
         self.response.out.write(template.render(template_values))
 
 class AddItemAction(webapp2.RequestHandler):
+    """Handle add item form submition
+
+    """
     def post(self):
+        """Handle user request
+
+        The item name could not be empty, contains '/' character as well
+        as already exist
+        """
         category_name = self.request.get('category_name')
         item_name = self.request.get('item_name').strip()
         if item_name == '':
@@ -200,7 +310,14 @@ class AddItemAction(webapp2.RequestHandler):
                           urllib.urlencode({'category_name': category_name, 'method': 'Add'}))
 
 class SelectItemAction(webapp2.RequestHandler):
+    """Construct edit item HTML page
+
+    """
     def get(self):
+        """Handle user request
+
+        The edit item HTML page would list all items in category
+        """
         category_name = self.request.get('category_name')
         item_name = self.request.get('item_name')
         if not item_name:
@@ -225,7 +342,17 @@ class SelectItemAction(webapp2.RequestHandler):
         self.response.out.write(template.render(template_values))
 
 class EditItemAction(webapp2.RequestHandler):
+    """Handle edit item form submition
+
+    """
     def post(self):
+        """Handle user request
+
+        The new item name would not be empty, contains '/' character as
+        well as already exist. If the user does not change the item name,
+        it will do nothing. Otherwise, all comments belonging to would be
+        delete automatically
+        """
         category_name = self.request.get('category_name')
         old_item_name = self.request.get('item_name').strip()
         new_item_name = self.request.get('new_item_name').strip()
@@ -253,7 +380,13 @@ class EditItemAction(webapp2.RequestHandler):
                           urllib.urlencode({'category_name': category_name, 'item_name': new_item_name}))
 
 class DeleteItemAction(webapp2.RequestHandler):
+    """Handle delete item form submition
+
+    """
     def post(self):
+        """Handler user request
+
+        """
         category_name = self.request.get('category_name')
         command = self.request.get('delete')
         user = users.get_current_user()

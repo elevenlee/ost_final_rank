@@ -43,7 +43,7 @@ def get_categories_by_name(keyword):
     """Returns categories of specified keyword
 
     Retrive all categories that its name equals keyword
-    :param: keyword the specified keyword
+    :param keyword the specified keyword
     :returns: categories of specified keyword
     """
     category_query = rankdata.Category.all().filter('name = ', keyword)
