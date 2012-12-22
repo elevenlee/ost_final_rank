@@ -13,7 +13,13 @@ search_action_path = 'search/action'
 result_page_path = 'search/result'
 
 class SearchPage(webapp2.RequestHandler):
+    """Construct search HTMl page
+
+    """
     def get(self):
+        """Handle user request
+
+        """
         invalid_name = self.request.get('invalid_name')
         user = users.get_current_user()
         url = users.create_logout_url(self.request.uri) if user else users.create_login_url(self.request.uri)
@@ -27,7 +33,17 @@ class SearchPage(webapp2.RequestHandler):
         self.response.out.write(template.render(template_values))
 
 class SearchAction(webapp2.RequestHandler):
+    """Handle search form submition and construct search result HTMl page
+
+    """
     def get(self):
+        """Handle user request
+
+        The search result is divided into two parts: category result and item
+        result. In the category result part, user could select a category to
+        vote. And in the item result part, user could select a item to submit
+        a comment.
+        """
         keyword = self.request.get('keyword').strip()
         if keyword == '':
             self.redirect('/{path}?'.format(path=search_page_path) +

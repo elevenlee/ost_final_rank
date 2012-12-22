@@ -15,6 +15,17 @@ import_action_path = 'import/action'
 edit_category_page_path = 'category/editaction'
 
 def update_category(author, category_name, item_names=[]):
+    """Update category of specified author, category name. and item name
+
+    If te category name does not exist in the specified author, it would
+    add the category and all items in the item name list and belongs to
+    that category. Otherwise, delete all items as well as comments belonging
+    to that does not exist in the item name list, then add all new items
+    in the item name list.
+    :param author the specified author
+    :param category_name the specified category name
+    :param item_names the specified item name list
+    """
     if category.get_category(author=author, name=category_name):
         old_items = item.get_items(author=author, category_name=category_name)
         delete_item_names = [old_item.name for old_item in old_items if old_item.name not in item_names]
@@ -35,7 +46,13 @@ def update_category(author, category_name, item_names=[]):
             new_item.put()
 
 class ImportMainPage(webapp2.RequestHandler):
+    """Construct import main HTML page
+
+    """
     def get(self):
+        """Handle user request
+
+        """
         invalid_select = self.request.get('select_file')
         user = users.get_current_user()
         url = users.create_logout_url(self.request.uri)
@@ -49,7 +66,14 @@ class ImportMainPage(webapp2.RequestHandler):
         self.response.out.write(template.render(template_values))
 
 class ImportAction(webapp2.RequestHandler):
+    """Handle import file form submition
+
+    """
     def post(self):
+        """Handle user request
+
+        When usr import a XML file, it would update category information.
+        """
         file_name = self.request.POST.multi['filename']
         if not file_name:
             self.redirect('/{path}?'.format(path=import_page_path) +

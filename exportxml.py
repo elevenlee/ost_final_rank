@@ -13,7 +13,15 @@ select_category_action_path = 'export/selectcategoryaction'
 result_page_path = 'export/result'
 
 class SelectCategoryPage(webapp2.RequestHandler):
+    """Construct select category HTML page
+
+    """
     def get(self):
+        """Handle user request
+
+        The select category HTML page would list all categories of all
+        users. The user should select one of them
+        """
         invalid_select = self.request.get('select_category')
         user = users.get_current_user()
         categories = category.get_categories()
@@ -29,7 +37,14 @@ class SelectCategoryPage(webapp2.RequestHandler):
         self.response.out.write(template.render(template_values))
 
 class SelectCategoryAction(webapp2.RequestHandler):
+    """Handle select category form submition
+
+    """
     def get(self):
+        """Handle user request
+
+        Construct category information in XML web page
+        """
         category_key = self.request.get('category_key')
         if not category_key:
             self.redirect('/{path}?'.format(path=select_category_page_path) +

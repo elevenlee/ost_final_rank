@@ -17,7 +17,16 @@ result_page_path = 'vote/result'
 result_action_path = 'vote/resultaction'
 
 class SelectCategoryPage(webapp2.RequestHandler):
+    """Construct select category HTMl page
+
+    """
     def get(self):
+        """Handle user request
+
+        The select category HTML page would list all categories of all
+        users which have at least two items. The user should select one
+        of them.
+        """
         invalid_select = self.request.get('select_category')
         user = users.get_current_user()
         categories = category.get_categories(item_number=2)
@@ -33,7 +42,15 @@ class SelectCategoryPage(webapp2.RequestHandler):
         self.response.out.write(template.render(template_values))
 
 class SelectCategoryAction(webapp2.RequestHandler):
+    """Handle select category form submition and construct vote HTML page
+
+    """
     def get(self):
+        """Handle user request
+
+        The vote HTML page would list two random items in category and
+        the result that the user just voted.
+        """
         category_key = self.request.get('category_key')
         if not category_key:
             self.redirect('/{path}?'.format(path=select_category_page_path) +
@@ -62,7 +79,13 @@ class SelectCategoryAction(webapp2.RequestHandler):
         self.response.out.write(template.render(template_values))
 
 class VoteItemAction(webapp2.RequestHandler):
+    """Handle vote form submition
+
+    """
     def post(self):
+        """Handle user request
+
+        """
         category_key = self.request.get('category_key')
         method = self.request.get('method')
 
@@ -85,7 +108,15 @@ class VoteItemAction(webapp2.RequestHandler):
                           urllib.urlencode({'category_key': category_key}))
 
 class ResultPage(webapp2.RequestHandler):
+    """Construct vote result HTML page
+
+    """
     def get(self):
+        """Handle user request
+
+        The vote result HTML page would list statistics of vote ordered by
+        wining percentage in descending.
+        """
         category_key = self.request.get('category_key')
         user = users.get_current_user()
         url = users.create_logout_url(self.request.uri) if user else users.create_login_url(self.request.uri)
