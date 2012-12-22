@@ -16,6 +16,12 @@ indexes:
   - name: create_time
     direction: desc
 
+- kind: Comment
+  ancestor: yes
+  properties:
+  - name: submit_time
+    direction: desc
+
 - kind: Item
   ancestor: yes
   properties:

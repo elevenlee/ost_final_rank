@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Select Item to Make a Comment</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/comment/selectitem.css">
+</head>
+
+<body>
+	{% if user %}
+		<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br>
+	{% else %}
+		<h5 class="userinfo"><a href="{{ url }}">Sign in</a> New to rank?<a href="{{ url }}">Sign up</a></h5><br>
+	{% endif %}
+
+	{% if invalid_select %}
+		<h4 class="warning"><i>Warning: You must select a item first!</i></h4>
+	{% endif %}
+	<h4 class="title"><b>Select a item:</b></h4>
+		<form method="get" action="/comment/selectitemaction" target="_self">
+			<div>
+				<input type="hidden" name="category_key" value="{{ category.author }}/{{ category.name }}">
+			</div>
+			{% for item in items %}
+				<div>
+					<input type="radio" name="item_name" value="{{ item.name }}"> {{ item.name }}
+				</div><br>
+			{% endfor %}
+			<div>
+				<input type="submit" name="select" value="Select a Item">
+			</div>
+		</form><br><hr>
+
+	<ul>
+		<li>See <a href="/comment/selectcategory">all categories</a></li>
+		<li>Back to <a href="/">Home Page</a></li>
+	</ul>
+</body>
+</html>
+

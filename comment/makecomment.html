@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Make Comment for Item '{{ item.name }}'</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/comment/makecomment.css">
+</head>
+
+<body>
+	<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br>
+	{% if invalid_comment %}
+		<div class="invalid"><i>You are not able to comment for Item '{{ item.name }}' in Category '{{ category.name }}' again!</i></div>
+	{% endif %}
+	<h4 class="title"><b>Input comment: (at least 10 characters)</b></h4>
+	<form method="post" action="/comment/makecommentaction" target="_self">
+		<div><input type="hidden" name="category_key" value="{{ category.author }}/{{ category.name }}"></div>
+		<div><input type="hidden" name="item_name" value="{{ item.name }}"></div>
+		<div><textarea name="content" rows=5 cols=80></textarea></div>
+		{% if invalid_content %}
+		<div class="invalid"><i>Your comment '{{ invalid_content }}' is less than 10 characters!</i></div>
+		{% endif %}
+		<br>
+		<div><input type="submit" name="make" value="Submit Comment"></div>
+	</form><br><hr>
+
+	<ul>
+		<li>See <a href="/comment/selectcategoryaction?category_key={{ category.author }}/{{ category.name }}">all items</a></li>
+		<li>See <a href="/comment/selectcategory">all categories</a></li>
+		<li>Back to <a href="/">Home Page</a></li>
+	</ul><br>
+
+	<h4 class="info"><b>Comments for Item '{{ item.name }}' in Category '{{ category.name }}':</b></h4>
+	<ul>
+		{% for comment in comments %}
+			<li>
+				<b>{{ comment.commenter }}</b> wrote at {{ comment.submit_time.strftime("%m-%d-%Y %H:%M:%S") }}:
+				<blockquote>{{ comment.content }}</blockquote>
+			</li>
+		{% endfor %}
+	</ul>
+</body>
+</html>

@@ -33,21 +33,11 @@ def get_categories(author=None, order='-create_time', item_number=0):
     return [ category for category in category_query.run() if item.get_items(author=category.author, category_name=category.name, count_or_not=True) >= item_number ] if item_number else category_query.run()
 
 def update_category(author, new_name, old_name):
-    old_category = get_category(author=author, name=old_name)
-    old_items = item.get_items(author=author, category_name=old_name)
-    db.delete(old_category)
-
     new_category = rankdata.Category(key_name='{author}/{name}'.format(author=author, name=new_name), author=author, name=new_name)
     new_category.put()
-
-    for old_item in old_items:
-        new_item = rankdata.Item(key_name='{author}/{category}/{item}'.format(author=author, category=new_name, item=old_item.name),
-                                 parent=item.get_ancestor_key(author=author, category_name=new_name),
-                                 name=old_item.name, create_time=old_item.create_time,
-                                 number_of_win=old_item.number_of_win, number_of_lose=old_item.number_of_lose,
-                                 percentage = old_item.percentage)
-        db.delete(old_item)
-        new_item.put()
+    item.reserve_all_items(author=author, new_category_name=new_name, old_category_name=old_name)
+    old_category = get_category(author=author, name=old_name)
+    db.delete(old_category)
 
 def delete_categories(author, names=[]):
     for name in names:
@@ -101,6 +91,7 @@ class AddCategoryAction(webapp2.RequestHandler):
 
 class EditCategoryPage(webapp2.RequestHandler):
     def get(self):
+        invalid_select = self.request.get('select_category')
         user = users.get_current_user()
         categories = get_categories(author=user)
         url = users.create_logout_url(self.request.uri)
@@ -109,6 +100,7 @@ class EditCategoryPage(webapp2.RequestHandler):
             'categories': categories,
             'url': url,
             'user': user,
+            'invalid_select': invalid_select,
         }
         template = jinja_environment.get_template('{path}.html'.format(path=edit_page_path))
         self.response.out.write(template.render(template_values))
@@ -116,6 +108,11 @@ class EditCategoryPage(webapp2.RequestHandler):
 class EditCategoryAction(webapp2.RequestHandler):
     def get(self):
         category_name = self.request.get('category_name')
+        if not category_name:
+            self.redirect('/{path}?'.format(path=edit_page_path) +
+                          urllib.urlencode({'select_category': 'Nothing'}))
+            return
+
         invalid_name = self.request.get('invalid_name')
         user = users.get_current_user()
         url = users.create_logout_url(self.request.uri)

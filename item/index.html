@@ -7,11 +7,14 @@
 
 <body>
 	<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br>
+	{% if invalid_select %}
+		<h4 class="warning"><i>Warning: You must select a category first!</i></h4>
+	{% endif %}
 	<h4 class="title"><b>Select a category:</b></h4>
 	<form method="get" action="/item/addeditdelete" target="_self">
 		{% for category in categories %}
 		<div>
-			<input type="radio" name="category_name" value="{{ category.name }}" checked> {{ category.name }}
+			<input type="radio" name="category_name" value="{{ category.name }}"> {{ category.name }}
 		</div><br>
 		{% endfor %}
 		<div>

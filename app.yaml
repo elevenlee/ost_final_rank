@@ -19,6 +19,11 @@ handlers:
   script: item.app
   login: required
 
+
+- url: /comment/.*
+  script: comment.app
+  login: required
+
 - url: /.*
   script: rank.app
 

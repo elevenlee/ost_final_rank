@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Edit Item in Category '{{ category_name }}'</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/item/selectedititem.css">
+</head>
+
+<body>
+	<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br>
+	{% if invalid_select %}
+		<h4 class="warning"><i>Warning: You must select a item first!</i></h4>
+	{% endif %}
+	<h4 class="title"><b>Select a item:</b></h4>
+	<form method="get" action="/item/selectedititemaction" target="_self">
+		<div><input type="hidden" name="category_name" value="{{ category_name }}"></div>
+		{% for item in items %}
+			<div>
+				<input type="radio" name="item_name" value="{{ item.name }}"> {{ item.name }}
+			</div><br>
+		{% endfor %}
+		<div><input type="submit" name="select" value="Edit Item"></div>
+	</form><br><hr>
+	<ul>
+		<li>See <a href="/item/index">all categories</a></li>
+		<li>Back to <a href="/">Home Page</a></li>
+	</ul>
+</body>
+</html>

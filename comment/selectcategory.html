@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Select Category to Vote</title>
-	<link type="text/css" rel="stylesheet" href="../stylesheets/vote/selectcategory.css">
+	<title>Select Category to Make a Comment</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/comment/selectcategory.css">
 </head>
 
 <body>
@@ -15,8 +15,8 @@
 	{% if invalid_select %}
 		<h4 class="warning"><i>Warning: You must select a category first!</i></h4>
 	{% endif %}
-	<h4 class="title"><b>Select a category: (Only Category(s) that have at least two items shown)</b></h4>
-		<form method="get" action="/vote/selectcategoryaction" target="_self">
+	<h4 class="title"><b>Select a category: (Only Category(s) that have at least one item shown)</b></h4>
+		<form method="get" action="/comment/selectcategoryaction" target="_self">
 			{% for category in categories %}
 				<div>
 					<input type="radio" name="category_key" value="{{ category.author }}/{{ category.name }}"> {{ category.name }} -- post by {{ category.author.nickname() }}

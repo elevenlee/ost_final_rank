@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Edit Item - {{ item_name }}</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/item/edit.css">
+</head>
+
+<body>
+	<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br>
+	<h4 class="warning">Note: Once you change the item's name, all results would be removed as well as all comments belonging to! So BE CAREFUL
+	<h4 class="title"><b>Edit item name:</b></h4>
+	<form method="post" action="/item/editaction" target="_self">
+		<div><input type="hidden" name="category_name" value="{{ category_name }}"></div>
+		<div><input type="hidden" name="item_name" value="{{ item_name }}"></div>
+		<div><input type="text" name="new_item_name" value="{{ item_name }}"></div>
+		{% if invalid_name %}
+			<div class="invalid"><i>'{{ invalid_name }}' is invalid!</i></div>
+		{% endif %}
+		<br>
+		<div><input type="submit" name="save" value="Save Item Name"></div>
+	</form><br><hr>
+
+	<ul>
+		<li>See <a href="/item/addeditdelete?category_name={{ category_name }}&method=Edit">all items</a></li>
+		<li>See <a href="/item/index">all categories</a></li>
+		<li>Back to <a href="/">Home Page</a></li>
+	</ul><br>
+
+	<h4 class="info"><b>Comments for Item '{{ item_name }}' in Category '{{ category_name }}'</b></h4>
+	<ul>
+		{% for comment in comments %}
+			<li>
+				<b>{{ comment.commenter }}</b> wrote at {{ comment.submit_time.strftime("%m-%d-%Y %H:%M:%S") }}:
+				<blockquote>{{ comment.content }}</blockquote>
+			</li>
+		{% endfor %}
+	</ul>
+</body>
+</html>
