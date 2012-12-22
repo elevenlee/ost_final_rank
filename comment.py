@@ -53,7 +53,7 @@ class SelectCategoryPage(webapp2.RequestHandler):
             'user': user,
             'invalid_select': invalid_select,
         }
-        template = jinja_environment.get_template('{path}.html'. format(path=select_category_page_path))
+        template = jinja_environment.get_template('{path}.html'.format(path=select_category_page_path))
         self.response.out.write(template.render(template_values))
 
 class SelectCategoryAction(webapp2.RequestHandler):
