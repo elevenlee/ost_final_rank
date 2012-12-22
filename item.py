@@ -40,6 +40,16 @@ def get_item_by_key(category_key, item_name):
                                 parent=ancestor_key)
     return db.get(item_key)
 
+def get_items_by_name(keyword):
+    item_map = {}
+    category_query = rankdata.Category.all()
+    for category_data in category_query.run():
+        ancestor_key = get_ancestor_key(category_data.author, category_data.name)
+        item_query = rankdata.Item.all().ancestor(ancestor_key).filter('name = ', keyword)
+        if item_query.count():
+            item_map['{author}/{category}'.format(author=category_data.author, category=category_data.name)] = item_query.get().name
+    return item_map
+
 def get_items(author, category_name, order='-create_time', count_or_not=False):
     ancestor_key = get_ancestor_key(author, category_name)
     item_query = rankdata.Item.all().ancestor(ancestor_key).order(order)

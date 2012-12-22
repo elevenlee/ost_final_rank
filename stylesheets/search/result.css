@@ -1,0 +1,10 @@
+body {
+	background-color: #DDDDDD;
+}
+h4.warning {
+	color: #FF0000;
+}
+h5.userinfo {
+	float:right;
+	margin-top:0px;
+}

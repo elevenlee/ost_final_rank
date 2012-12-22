@@ -19,6 +19,8 @@ handlers:
   script: item.app
   login: required
 
+- url: /search/.*
+  script: search.app
 
 - url: /comment/.*
   script: comment.app

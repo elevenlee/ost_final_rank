@@ -28,6 +28,10 @@ def get_category_by_key(key):
     category_key = db.Key.from_path('Category', key)
     return db.get(category_key)
 
+def get_categories_by_name(keyword):
+    category_query = rankdata.Category.all().filter('name = ', keyword)
+    return category_query.fetch(limit=None)
+
 def get_categories(author=None, order='-create_time', item_number=0):
     category_query = rankdata.Category.all().filter("author = ", author).order(order) if author else rankdata.Category.all().order(order)
     return [ category for category in category_query.run() if item.get_items(author=category.author, category_name=category.name, count_or_not=True) >= item_number ] if item_number else category_query.run()

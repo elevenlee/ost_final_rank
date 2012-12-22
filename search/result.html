@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Search Result for '{{ keyword }}'</title>
+	<link type="text/css" rel="stylesheet" href="../stylesheets/search/result.css">
+</head>
+
+<body>
+	{% if user %}
+		<h5 class="userinfo">Not {{ user }}? <a href="{{ url }}">Sign out</a></h5><br>
+	{% else %}
+		<h5 class="userinfo"><a href="{{ url }}">Sign in</a> New to rank?<a href="{{ url }}">Sign up</a></h5><br>
+	{% endif %}
+
+	{% if categories == [] %}
+		<h4 class="warning"><b>No category named '{{ keyword }}'</b></h4><br><hr>
+	{% else %}
+		<h4 class="title"><b>Result for category:</b></h4>
+		<form method="get" action="/vote/selectcategoryaction" target="_self">
+			{% for category in categories %}
+			<div>
+				<input type="radio" name="category_key" value="{{ category.author }}/{{category.name }}" checked> {{ category.name }} -- post by {{ category.author.nickname() }}
+			</div><br>
+			{% endfor %}
+			<div>
+				<input type="submit" name="select_vote" value="Select a Category to Vote">
+			</div>
+		</form><br><hr>
+	{% endif %}
+
+	{% if item_map == {} %}
+		<h4 class="warning"><b>No item named '{{ keyword }}'</b></h4><br><hr>
+	{% else %}
+		<h4 class="title"><b>Result for item:</b></h4>
+		<form method="get" action="/comment/selectitemaction" target="_self">
+			{% for category_key in item_map.keys() %}
+				<div>
+					<input type="hidden" name="category_key" value="{{ category_key }}">
+					<input type="radio" name="item_name" value="{{ item_map.get(category_key )}}" checked> {{ item_map.get(category_key) }} -- in Category '{{ category_key.split('/')[-1] }}' (post by '{{ category_key.split('/')[0] }}')
+				</div><br>
+			{% endfor %}
+			<div>
+				<input type="submit" name="select_comment" value="Select a Item to Comment">
+			</div>
+		</form><br><hr>
+	{% endif %}
+
+	<ul>
+		<li>Not you want? <a href="/search/index">Search again</a></li>
+		<li>Back to <a href="/">Home Page</a></li>
+	</ul>
+</body>
+</html>
